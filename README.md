@@ -12,7 +12,7 @@ F*** Stack Development is a hobby project that represents a MERN stack.
 
 Repository contains two main folder **back** and **front**. Back folder contains server side files. Front folder contains frontend files (React).
 
-## Release Notes
+# Release Notes
 
  - Project is still under **development**.
  - Live section completed features are;
@@ -21,6 +21,6 @@ Repository contains two main folder **back** and **front**. Back folder contains
  -- Broadcasting the channels to all clients
  - Board section is completely not ready
 
-## Collaboration
+# Collaboration
 
 I would be more than glad if you give me any feedback, regarding to usage of the related libraries, performance & security issues. *kadirrkoca@gmail.com* is my personal email address.
