@@ -1,0 +1,47 @@
+@import './fontschema';
+@import './settings';
+
+html {
+    font-size: 62.5%;
+    background: $generic-bg;
+}
+
+body {
+    font-size: $s-size;
+    font-family: $font-glacial;
+    background: $generic-bg;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: default;
+}
+
+.no-resize {
+    resize: none;
+}
+
+.no-style-button{    
+	background: none;
+	color: inherit;
+	border: none;
+	font: inherit;
+	outline: inherit;
+}
+
+.centering{    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input, textarea{
+    font-size: $s-size !important;
+}
+
+.navbar-collapse {
+    overflow: auto;
+}

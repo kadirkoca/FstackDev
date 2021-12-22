@@ -1,0 +1,10 @@
+export const LOGIN = "LOGIN"
+export const LOGOUT = "LOGOUT"
+export const SIGNUP = "SIGNUP"
+export const STACKS = "STACKS"
+
+export const REGISTER_CHANNEL = "REGISTER_CHANNEL"
+export const REGISTER_ALL_CHANNELS = "REGISTER_ALL_CHANNELS"
+export const FOCUS_CHANNEL = "FOCUS_CHANNEL"
+export const EXIT_CHANNEL = "EXIT_CHANNEL"
+export const LOAD_CHANNEL = "LOAD_CHANNEL"

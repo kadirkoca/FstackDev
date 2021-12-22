@@ -1,0 +1,66 @@
+
+////////////////////  CHANNEL BOX
+
+.channel-box {
+    padding: 1.6rem;
+    background: $bright-accent;
+    margin: 0.5rem auto;
+    border-radius: 0.5rem;
+    border: 1px solid;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+}
+
+.channel-box:hover {
+    border: 1px solid $sweet-green;
+}
+
+.channel-box .avatar {
+    max-width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    background: orange;
+    margin-right: 1rem;
+    border-radius: 20px;
+    pointer-events: none;
+}
+.channel-box .avatar span {
+    font-size: 2.2rem;
+    color: #f1f1f1;
+    text-align: center;
+    display: block;
+    line-height: 1.8;
+}
+
+.channel-box .infobox {
+    width: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.channel-box .infobox p {
+    font-size: 1.4rem;
+    color: #6e6767;
+    font-weight: bold;
+    margin-bottom: 0;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.channel-box .infoline {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: $sweet-green;
+}
+
+.channel-box .infobox label {
+    color: $sweet-green;
+}

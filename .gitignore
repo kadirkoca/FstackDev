@@ -1,0 +1,5 @@
+front/node_modules
+back/node_modules
+front/config
+back/config
+webpack.config.js

@@ -1,0 +1,50 @@
+
+.navbar{
+    font-family: $font-glacial;
+    background: $bright-accent;
+    border-top: 1px #e9ecef solid;
+    border-bottom: 1px #e9ecef solid;
+    padding-top:0;
+    padding-bottom:0;
+    font-size: $m-size;
+    height: $nav-height;
+    font-variant: small-caps;
+    box-shadow: 0 0px 11px 0px #00000017;
+}
+
+.navbar > .container-fluid {
+    height: $nav-height;
+}
+
+.navbar .navbar-brand{
+    padding: 0 !important;
+    vertical-align: bottom;
+    font-size: $m-size;
+    height: $nav-height;
+    display: table;
+}
+
+.navbar .navbar-brand a{
+    color: $generic-text;
+    height: $nav-height;
+    display: table-cell;
+    vertical-align: middle;
+    font-size: $mp-size;
+}
+
+.navlink-holder{
+    display: table;
+}
+
+.navbar .nav-link{
+    color:#292929;
+    letter-spacing: 0.16rem;
+    border-bottom:2px transparent solid;
+    transition: 0.5s all;
+    height: $nav-height;
+    display: table-cell;
+    vertical-align: middle;
+}
+.navbar .nav-link:hover, .navbar .nav-link.active{
+    border-bottom:2px gray solid;
+}

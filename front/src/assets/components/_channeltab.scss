@@ -1,0 +1,26 @@
+.channel-tab{
+    cursor: pointer;
+}
+
+.channel-tab button{
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width:8rem;
+
+    
+    background: $generic-bg;
+    outline: none;
+    border: 1px solid #999999;
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    font-size: 1.2rem;
+    height: 3rem;
+    pointer-events: none;
+}
+
+.channel-tab.active button{
+    background: $sweet-green;
+    color: $bright-accent;
+}

@@ -1,0 +1,144 @@
+$container-height: calc(100vh - 2rem - #{2 * $nav-height});
+$message-panel-header: 7rem;
+$message-panel: calc(100vh - 2rem - #{2 * $nav-height} - #{2 * $message-panel-header});
+
+.message-panel-container{
+    background: $bright-accent;
+    border: 1px solid #b8b8b8;
+    border-top: none;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    min-height: $container-height;
+    max-height: $container-height;
+}
+
+.message-panel-header{
+    min-height: $message-panel-header;
+    max-height: $message-panel-header;
+    border-bottom: 1px solid $generic-bg;
+}
+
+.message-panel{
+    min-height: $message-panel;
+    max-height: $message-panel;
+    background: #f4f4f4;
+    background-image: radial-gradient(#999999 0.5px, transparent 0.5px), radial-gradient(#8b8b8b 0.5px, #f4f4f4 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0,10px 10px;
+    overflow: auto;
+}
+
+.message-panel-footer{
+    min-height: $message-panel-header;
+    max-height: $message-panel-header;
+    border-top: 1px solid $generic-bg;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+
+
+.message-panel-footer button {    
+    background: $sweet-green;
+    color: white;
+    padding: 1rem 1.3rem;
+    outline: none;
+    border: none;
+    border-radius: 1rem;
+}
+
+
+.message-panel-footer input{
+    width: 90%;
+    background: none;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid $generic-bg;
+    padding: 0.8rem;
+    color: #6e6767;
+}
+
+
+
+
+.message-panel-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
+.message-panel-header .avatar {
+    max-width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    background: orange;
+    margin-right: 1rem;
+    border-radius: 20px;
+    pointer-events: none;
+}
+.message-panel-header .avatar span {
+    font-size: 2.2rem;
+    color: #f1f1f1;
+    text-align: center;
+    display: block;
+    line-height: 1.8;
+}
+
+.message-panel-header .infobox {
+    width: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.message-panel-header .infobox p {
+    font-size: 1.4rem;
+    color: #6e6767;
+    font-weight: bold;
+    margin-bottom: 0;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+
+
+
+///// Message Bubble
+.message-bubble-container{
+    margin: 1rem 0.3rem;
+    display: flex;
+    align-items: center;
+}
+.message-bubble{
+    max-width: 80%;
+    display: block;
+    padding: 1rem;
+    border: 1px solid #d9d9d9;
+}
+.message-bubble .header{
+    display: flex;
+    justify-content: space-between;
+    padding-left: 1rem;
+    align-items: center;
+}
+.message-bubble .header .title{
+    font-weight: bold;
+    margin-right:1rem;
+}
+.message-bubble.left{
+    background: #e6eeee;
+    border-radius: 1rem 0 1rem 1rem;
+}
+.message-bubble.right{
+    background: #eee6e6;
+    border-radius: 0 1rem 1rem 1rem;
+    margin-left: auto;
+}
