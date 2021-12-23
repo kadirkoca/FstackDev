@@ -16,7 +16,14 @@ class SocketCL {
         if (Socket) Socket.send(JSON.stringify(message))
     }
 
-    JoinChannel() {}
+    JoinChannel(channeluid, messagesCount, client) {        
+        const message = {
+            meta: "join",
+            message: {'uid':channeluid, 'count':messagesCount},
+            user: { id: client._id, name: client.name}
+        }
+        this.SendMessage(message)
+    }
 
     LeaveChannel() {
         if (Socket) Socket.disconnect()

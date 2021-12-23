@@ -1,4 +1,10 @@
-import { REGISTER_CHANNEL, FOCUS_CHANNEL, EXIT_CHANNEL, LOAD_CHANNEL, REGISTER_ALL_CHANNELS } from "../actions/action-types"
+import {
+    REGISTER_CHANNEL,
+    FOCUS_CHANNEL,
+    EXIT_CHANNEL,
+    LOAD_CHANNEL,
+    REGISTER_ALL_CHANNELS
+} from "../actions/action-types"
 import { channelContext, AuthOfStorage } from "../services/storage-service"
 
 const initialState = () => {

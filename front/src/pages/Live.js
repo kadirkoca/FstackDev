@@ -7,22 +7,24 @@ import Spinner from "../components/Spinner"
 import SideBar from "../components/sidebar"
 import SideBarContent from "../components/SideBarContent"
 import SocketCL from "../services/socket-service"
-import { EnterChannelAction, RegisterChannelsAction, LoadChannelAction, RegisterAllChannelsAction } from "../actions/channel-actions"
-
-
+import {
+    EnterChannelAction,
+    RegisterChannelsAction,
+    LoadChannelAction,
+    RegisterAllChannelsAction
+} from "../actions/channel-actions"
 
 const Live = (props) => {
     const [isOpen, setOpen] = useState(true)
-    const [channels, setChannels] = useState([])
+    const [currentChannel, setCurrentChannel] = useState(null)
     const [connection, setConnection] = useState(false)
     let previousWidth = -1
-
 
     const updateWidth = () => {
         const width = window.innerWidth
         const widthLimit = 576
         const isMobile = width <= widthLimit
-        if (isMobile !== (previousWidth <= widthLimit)) {
+        if (isMobile !== previousWidth <= widthLimit) {
             setOpen(!isMobile)
         }
 
@@ -56,31 +58,51 @@ const Live = (props) => {
     const ListenSocket = () => {
         SocketCL.ListenMessage((data) => {
             if (data.meta !== undefined) {
-                if(data.meta === 'channelcreated'){
+                if (data.meta === "channelcreated") {
                     props.EnterChannelAction(data.channel.uid)
                     props.LoadChannelAction(data.channel)
                     props.RegisterChannelsAction(data.channel)
                 }
-                if(data.meta === 'channellist'){
-                    const channelsFromServer = Object.values(data.message)
-                    if(channelsFromServer.length>0){
+                if (data.meta === "channellist") {
+                    const channelsFromServer = data.message
+                    if (channelsFromServer.length > 0) {
                         props.RegisterAllChannelsAction(channelsFromServer)
                     }
                 }
-            }else{
-                const msg = {
-                    direction: 'left',
-                    message:data.message
+                if (data.meta === "joinchannel") {
+                    const sik = props.channels
+                    console.log(sik)
+                    const messages = data.messages
+                    const channel = props.channels.find((channel) => channel.uid === data.uid)
+                    const person = channel.participants.find((person) => person.id === data.user.id)
+                    if(!person){
+                        channel.participants.push(data.user)
+                    }
+                    if (messages.length > 0) {
+                        channel.messages = [...channel.messages, ...messages]
+                    }
+                }                
+                if (data.meta === "newmessage") {
+                    const channel = props.loadedChannels.find((channel) => channel.uid === uid)
+                    if (!channel) {
+                        channel.messages.push(message)
+                    }
                 }
-                InsertMessage(msg)
             }
         })
     }
 
+    const JoinChannel = (channel) => {
+        const messagecount = channel.messages.length
+        const channeluid = channel.uid
+        SocketCL.JoinChannel(channeluid, messagecount, props.user)
+        setCurrentChannel(channel)
+    }
+
     return (
         <div className="sidebar-wrapper">
-            <SideBar toggle={toggle} isOpen={isOpen}/>
-            <SideBarContent toggle={toggle} isOpen={isOpen}/>
+            <SideBar toggle={toggle} isOpen={isOpen} JoinChannel={JoinChannel} />
+            <SideBarContent toggle={toggle} isOpen={isOpen} currentChannel={currentChannel}/>
         </div>
     )
 }
@@ -90,12 +112,12 @@ const mapStateToProps = (state) => {
     const { currentchannelID, loadedChannels, channels } = state.channel || {}
 
     return {
-        authenticated,
-        token,
-        user,
         channels,
         loadedChannels,
         currentchannelID,
+        authenticated,
+        token,
+        user
     }
 }
 

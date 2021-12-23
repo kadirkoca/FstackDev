@@ -6,34 +6,34 @@ import ChannelTab from "./ChannelTab"
 import { connect } from "react-redux"
 import MessagePanel from "./MessagePanel"
 import SocketCL from "../services/socket-service"
+import { EnterChannelAction } from "../actions/channel-actions"
 
 const SideBarContent = (props) => {
-    //SOCKET
-    const [messages, setMessage] = useState([])
+    const [channel, setChannel] = useState(null)
 
-    const InsertMessage = (msg) => {
-        setMessage((messages) => [...messages, msg])
+    if(props.currentChannel !== null && channel !== props.currentChannel){
+        setChannel(props.currentChannel)
     }
 
     const selectTab = (e) => {
         const currentchannelID = e.target.attributes.index.value
         props.EnterChannelAction(currentchannelID)
+        const channel = props.channels.find((channel) => channel.uid === currentchannelID)
+        setChannel(channel)
     }
 
     const SendMessage = (e) => {
         e.preventDefault()
         const msg = {
-            user: props.user._id,
-            message: e.target.message.value,
-            meta: null,
-            channel: null,
+            message: { text: e.target.message.value, sender: props.user._id, direction: "right" },
+            meta: "textmessage",
+            cuid: e.target.cuid.value,
         }
+        
+        channel.messages.push(msg.message)
         SocketCL.SendMessage(msg)
         e.target.message.value = ""
-
-        msg.direction = "right"
-        InsertMessage(msg)
-    }   
+    }
 
     return (
         <Container fluid className={classNames("content", { "is-open": props.isOpen })}>
@@ -43,13 +43,13 @@ const SideBarContent = (props) => {
                 </button>
                 <span className="mx-3">|</span>
                 <Navbar.Collapse>
-                    {/* {AllChannels &&
-                        AllChannels.map((channeltab, i) => {
-                            return <ChannelTab channeltab={channeltab} click={selectTab} key={i}/>
-                        })} */}
+                    {props.loadedChannels &&
+                        props.loadedChannels.map((channel, i) => {
+                            return <ChannelTab channel={channel} selectTab={selectTab} key={i} />
+                        })}
                 </Navbar.Collapse>
             </Navbar>
-            <MessagePanel/>
+            {(channel !== null) && <MessagePanel channel={channel} SendMessage={SendMessage}/>}
         </Container>
     )
 }
@@ -68,9 +68,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
     EnterChannelAction: (context) => dispatch(EnterChannelAction(context)),
-    RegisterChannelsAction: (context) => dispatch(RegisterChannelsAction(context)),
-    LoadChannelAction: (context) => dispatch(LoadChannelAction(context)),
-    RegisterAllChannelsAction: (context) => dispatch(RegisterAllChannelsAction(context)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SideBarContent)

@@ -17,13 +17,12 @@ const SideBar = (props) => {
         if (e.detail === 2) {
             const currentchannelID = e.target.attributes.channelid.value
             const channel = props.channels.find((channel) => channel.uid === currentchannelID)
-            const isLoaded = props.loadedChannels.find((channel) => channel.uid === currentchannelID)
-
-            props.EnterChannelAction(currentchannelID)
-            
+            const isLoaded = props.loadedChannels.find((channel) => channel.uid === currentchannelID)    
+            props.EnterChannelAction(currentchannelID)            
             if(!isLoaded){
                 props.LoadChannelAction(channel)
-            }
+            } 
+            props.JoinChannel(channel)
         }
     }
 

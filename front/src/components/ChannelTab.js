@@ -5,11 +5,11 @@ import { BsChevronBarExpand, BsStarHalf, BsStar } from "react-icons/Bs"
 import { connect } from "react-redux"
 
 const ChannelTab = (props) => {
-    const classname = props.channeltab.uid === props.currentchannelID ? 'active channel-tab' : 'channel-tab'
+    const classname = props.channel.uid === props.currentchannelID ? 'active channel-tab' : 'channel-tab'
     
     return (
-        <div className={classname} index={props.channeltab.uid} onClick={props.click}>
-            <button>{props.channeltab.subject}</button>
+        <div className={classname} index={props.channel.uid} onClick={props.selectTab}>
+            <button>{props.channel.subject}</button>
         </div>
     )
 }
