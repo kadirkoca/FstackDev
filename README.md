@@ -1,6 +1,6 @@
-# Welcome to Fstack Dev
+# Welcome to F{ull} stack development
 
-F*** Stack Development is a hobby project that represents a MERN stack.
+Full Stack Development is a hobby project that represents a MERN stack.
 
  - Node.js
  - Express.js

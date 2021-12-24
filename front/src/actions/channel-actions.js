@@ -1,4 +1,4 @@
-import { REGISTER_CHANNEL, FOCUS_CHANNEL, EXIT_CHANNEL, LOAD_CHANNEL, REGISTER_ALL_CHANNELS } from "./action-types"
+import { REGISTER_CHANNEL, FOCUS_CHANNEL, EXIT_CHANNEL, LOAD_CHANNEL, REGISTER_ALL_CHANNELS, SET_SERVER_MESSAGE } from "./action-types"
 
 export const RegisterChannelsAction = (content) =>({
     type: REGISTER_CHANNEL,
@@ -22,5 +22,10 @@ export const ExitChannelAction = (content) => ({
 
 export const RegisterAllChannelsAction = (content) => ({
     type: REGISTER_ALL_CHANNELS,
+    content,
+})
+
+export const SetServerMessageAction = (content) => ({
+    type: SET_SERVER_MESSAGE,
     content,
 })

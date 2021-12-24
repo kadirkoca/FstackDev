@@ -28,6 +28,18 @@ $message-panel: calc(100vh - 2rem - #{2 * $nav-height} - #{2 * $message-panel-he
     overflow: auto;
 }
 
+.message-panel .server-message{
+    display: block;
+    text-align: center;
+    padding: 0.3rem;
+    font-style: italic;
+    color: #437c47;
+    border: 1px solid #dfdfdf;
+    border-top: none;
+    border-bottom-left-radius: 2.5rem;
+    border-bottom-right-radius: 2.5rem;
+}
+
 .message-panel-footer{
     min-height: $message-panel-header;
     max-height: $message-panel-header;

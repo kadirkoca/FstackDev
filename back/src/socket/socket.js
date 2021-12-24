@@ -19,6 +19,13 @@ class Socket extends SocketBase {
             wsocket.on("message", (data) => {
                 this.ProcessMessage(wsocket, data)
             })
+
+            wsocket.on("disconnected", (data)=>{
+                console.log('disconnected')
+                for(let channel of Channels){
+                    channel.participants.map((user)=> user.socket !== wsocket)
+                }
+            })
         })
     }
 
@@ -94,7 +101,10 @@ class Socket extends SocketBase {
     JoinChannel(socket, channelUID, count, user) {
         const channel = Channels.get(channelUID)
         if(!channel)return
-        channel.participants.push(user)
+        const person = channel.participants.find((person) => person.id === user.id)
+        if (!person) {
+            channel.participants.push(user)
+        }
         
         let messageBatch = []
         if(count !== channel.messages.length){
@@ -111,9 +121,13 @@ class Socket extends SocketBase {
         }
         const data = JSON.stringify(msg)
         socket.send(data)
+        this.SendChannels(socket, channel, false, true)
+        const message = { text: `${user.name} has joint the channel`, sender: 'server', meta: 'join' ,sender_id: user.id }
+        const bcast = JSON.stringify({meta: 'newmessage', channelUID, message})
+        this.BroadcastMessage(socket, bcast, false, true)
     }
 
-    SendChannels(socket, channel = null, sendtosocket = false) {
+    SendChannels(socket, channel = null, sendtosocket = false, toAll = false) {
         if (!wserver) return
         let channels = null
 
@@ -129,7 +143,7 @@ class Socket extends SocketBase {
             meta: "channellist",
         }
         const data = JSON.stringify(msg)
-        this.BroadcastMessage(socket, data, sendtosocket)
+        this.BroadcastMessage(socket, data, sendtosocket, toAll)
     }
 
     GetChannels(specifiChannel = null){
@@ -150,7 +164,7 @@ class Socket extends SocketBase {
         return dummyChannels
     }
 
-    BroadcastMessage(socket, data, toOne = false, exceptOne = true){
+    BroadcastMessage(socket, data, toOne = false, toAll = false){
         if(toOne === true){
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(data)
@@ -160,7 +174,7 @@ class Socket extends SocketBase {
 
         wserver.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
-                if((exceptOne && client !== socket) || exceptOne === false){
+                if((toAll === false && client !== socket) || toAll === true){
                     client.send(data)
                 }
             }

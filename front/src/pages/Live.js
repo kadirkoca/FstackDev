@@ -12,10 +12,10 @@ import {
     RegisterChannelsAction,
     LoadChannelAction,
     RegisterAllChannelsAction,
+    SetServerMessageAction
 } from "../actions/channel-actions"
 
 const Live = (props) => {
-    const channels = props.channels
     const [isOpen, setOpen] = useState(true)
     const [currentChannel, setCurrentChannel] = useState(null)
     const [connection, setConnection] = useState(false)
@@ -39,7 +39,6 @@ const Live = (props) => {
                     setConnection(false)
                 } else {
                     setConnection(true)
-                    ListenSocket()
                 }
             }, props.token)
         }
@@ -56,7 +55,7 @@ const Live = (props) => {
         setOpen(!isOpen)
     }
 
-    const ListenSocket = () => {
+    if (connection) {
         SocketCL.ListenMessage((data) => {
             if (data.meta !== undefined) {
                 if (data.meta === "channelcreated") {
@@ -72,23 +71,39 @@ const Live = (props) => {
                     }
                 }
                 if (data.meta === "joinchannel") {
-                    console.log(channels)
                     const messages = data.messages
                     const channel = props.channels.find((channel) => channel.uid === data.uid)
                     const person = channel.participants.find((person) => person.id === data.user.id)
+                    console.log(person)
                     if (!person) {
                         channel.participants.push(data.user)
                     }
                     if (messages.length > 0) {
                         channel.messages = [...channel.messages, ...messages]
                     }
+                    setCurrentChannel(channel)
                 }
                 if (data.meta === "newmessage") {
-                    console.log(channels)
-                    const channel = props.loadedChannels.find((channel) => channel.uid === uid)
-                    if (!channel) {
-                        channel.messages.push(message)
-                    }
+                    const { message, channelUID } = data
+                    const channel = props.loadedChannels.find((channel) => channel.uid === channelUID)
+
+                    if(message.sender === "server"){
+                        if(message.meta === 'join'){
+                            const alreadyIn = channel.participants.find((user) => user.id === message.sender_id)
+
+                            if(!alreadyIn){
+                                props.SetServerMessageAction(message.text)
+
+                                setTimeout(()=>{
+                                    props.SetServerMessageAction('')
+                                }, 5000)
+                            }
+                        }
+                    }else {
+                        if (channel) {
+                            channel.messages.push(message)
+                        }
+                    } 
                 }
             }
         })
@@ -97,9 +112,7 @@ const Live = (props) => {
     const JoinChannel = (channel) => {
         const messagecount = channel.messages.length
         const channeluid = channel.uid
-        if(channel.creator.id !== props.user._id){
-            SocketCL.JoinChannel(channeluid, messagecount, props.user)
-        }
+        SocketCL.JoinChannel(channeluid, messagecount, props.user)
         setCurrentChannel(channel)
     }
 
@@ -137,6 +150,7 @@ const mapDispatchToProps = (dispatch) => ({
     RegisterChannelsAction: (context) => dispatch(RegisterChannelsAction(context)),
     LoadChannelAction: (context) => dispatch(LoadChannelAction(context)),
     RegisterAllChannelsAction: (context) => dispatch(RegisterAllChannelsAction(context)),
+    SetServerMessageAction: (context) => dispatch(SetServerMessageAction(context)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Live)

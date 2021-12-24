@@ -1,6 +1,7 @@
 import React from "react"
 import { BiExit, BiSend } from "react-icons/Bi"
 import MessageBubble from "./MessageBubble"
+import { connect } from "react-redux"
 
 const MessagePanel = (props) => {
     const channel = props.channel
@@ -25,6 +26,7 @@ const MessagePanel = (props) => {
                         </button>
                     </div>
                     <div className="message-panel">
+                        {props.server_message && <span className="server-message">{props.server_message}</span>}                        
                         {messages.map((data, i) => {
                             if(!data.message)return
                             return <MessageBubble key={i} title={data.user.name} content={data.message} direction={data.direction ? data.direction : 'left' } />
@@ -45,4 +47,12 @@ const MessagePanel = (props) => {
     )
 }
 
-export default MessagePanel
+
+const mapStateToProps = (state) => {
+    const { server_message } = state.channel || {}
+
+    return {
+        server_message
+    }
+}
+export default connect(mapStateToProps)(MessagePanel)

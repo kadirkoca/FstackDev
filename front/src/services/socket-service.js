@@ -26,7 +26,7 @@ class SocketCL {
     }
 
     LeaveChannel() {
-        if (Socket) Socket.disconnect()
+        if (Socket) Socket.close()
     }
 
     CreateChannel(subject, user) {
