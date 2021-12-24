@@ -17,11 +17,6 @@ const SideBar = (props) => {
         if (e.detail === 2) {
             const currentchannelID = e.target.attributes.channelid.value
             const channel = props.channels.find((channel) => channel.uid === currentchannelID)
-            const isLoaded = props.loadedChannels.find((channel) => channel.uid === currentchannelID)    
-            props.EnterChannelAction(currentchannelID)            
-            if(!isLoaded){
-                props.LoadChannelAction(channel)
-            } 
             props.JoinChannel(channel)
         }
     }
@@ -41,26 +36,9 @@ const SideBar = (props) => {
                     return <ChannelBox key={i} channelbox={channelbox} ChannelSelected={ChannelSelected} />
                 })}
             </div>
-            <NewChannelModal isOpen={newChannel} onHide={handleCloseChannelModal}/>
+            <NewChannelModal isOpen={newChannel} onHide={handleCloseChannelModal} />
         </div>
     )
 }
 
-const mapStateToProps = (state) => {
-    const { currentchannelID, loadedChannels, channels} = state.channel || {}
-    const { authenticated, token, user } = state.auth || {}
-    return {
-        currentchannelID,
-        loadedChannels,
-        channels,
-        token,
-        user
-    }
-}
-
-const mapDispatchToProps = (dispatch) => ({
-    EnterChannelAction: (context) => dispatch(EnterChannelAction(context)),
-    LoadChannelAction: (context) => dispatch(LoadChannelAction(context)),
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(SideBar)
+export default SideBar

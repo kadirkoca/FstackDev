@@ -1,4 +1,5 @@
 front/node_modules
+front/dist
 back/node_modules
 front/config
 back/config

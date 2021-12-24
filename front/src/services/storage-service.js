@@ -6,8 +6,13 @@ import CryptoJS from "crypto-js"
 const pass = process.env.APP_SECRET
 const authStorageItemKey = "acontext"
 const dataStorageItemKey = "datacontext"
+const channelStorageItemKey = "channelscontext"
 
 export const authContext = () => {
+    const dataset = ReadStorage(null, 'auth')
+    if(dataset){
+        return dataset
+    }
     return {
         authenticated: false,
         token: null,
@@ -17,85 +22,73 @@ export const authContext = () => {
 
 export const dataContext = () => {
     return {
-        stacks:null
+        stacks: null,
     }
 }
 
 export const channelContext = () => {
+    const dataset = ReadStorage(null, 'channel')
+    if(dataset){
+        return dataset
+    }
     return {
-        currentchannelID:null,
-        channels:[],
-        loadedChannels:[]
+        currentchannelID: null,
+        channels: [],
+        loadedChannels: [],
     }
 }
 
-export const AuthOfStorage = (key = null) => {
+
+const getTheItemKey = (itemkey) => {
+    let StorageItemKey = null
+    switch (itemkey) {
+        case "auth":
+            StorageItemKey = authStorageItemKey
+            break
+        case "data":
+            StorageItemKey = dataStorageItemKey
+            break
+        case "channel":
+            StorageItemKey = channelStorageItemKey
+            break
+    }
+    return StorageItemKey
+}
+
+export const ReadStorage = (key = null, itemKey) => {
     try {
-        const serializedContext = sessionStorage.getItem(authStorageItemKey)
+        const StorageItemKey = getTheItemKey(itemKey)
+        const serializedContext = sessionStorage.getItem(StorageItemKey)
         if (serializedContext === null) {
             return undefined
         }
-        const decrypted = CryptoJS.AES.decrypt(serializedContext, pass).toString(CryptoJS.enc.Utf8)
-        const JSONdecrypted = JSON.parse(decrypted)
+        
+        const data = itemKey === 'auth' ? CryptoJS.AES.decrypt(serializedContext, pass).toString(CryptoJS.enc.Utf8) : serializedContext
+        const JSONdecrypted = JSON.parse(data)
         if (key) {
             return JSONdecrypted[key]
         }
         return JSONdecrypted
-    } catch(e) {
+    } catch (e) {
         return undefined
     }
 }
 
-export const AuthToStorage = (context) => {
+export const WriteStorage = (context, itemKey) => {
     try {
+        const StorageItemKey = getTheItemKey(itemKey)
         const serializedContext = JSON.stringify(context)
-        const encrypted = CryptoJS.AES.encrypt(serializedContext, pass)
-        sessionStorage.setItem(authStorageItemKey, encrypted)
+        const data = itemKey === 'auth' ? CryptoJS.AES.encrypt(serializedContext, pass) : serializedContext
+        sessionStorage.setItem(StorageItemKey, data)
     } catch (e) {
         return e
     }
 }
 
-export const AuthDestroy = () => {
+export const DestroyDestroy = (itemKey) => {
     try {
-        const serializedContext = sessionStorage.removeItem(authStorageItemKey)
-    } catch (e) {
-        return e
-    }
-}
-
-
-
-////// DATA
-
-export const DataOfStorage = (key = null) => {
-    try {
-        const serializedContext = sessionStorage.getItem(dataStorageItemKey)
-        if (serializedContext === null) {
-            return undefined
-        }
-        const JSONdecrypted = JSON.parse(serializedContext)
-        if (key) {
-            return JSONdecrypted[key]
-        }
-        return JSONdecrypted
-    } catch(e) {
-        return undefined
-    }
-}
-
-export const DataToStorage = (context) => {
-    try {
-        const serializedContext = JSON.stringify(context)
-        sessionStorage.setItem(dataStorageItemKey, serializedContext)
-    } catch (e) {
-        return e
-    }
-}
-
-export const DataDestroy = () => {
-    try {
-        sessionStorage.removeItem(dataStorageItemKey)
+        const StorageItemKey = getTheItemKey(itemKey)
+        const serializedContext = sessionStorage.removeItem(StorageItemKey)
     } catch (e) {
         return e
     }

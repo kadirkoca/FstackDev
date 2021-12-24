@@ -1,5 +1,5 @@
 import authHeader from "./auth-header"
-import { authContext, AuthToStorage, AuthDestroy } from "./storage-service"
+import { authContext, WriteStorage, DestroyDestroy } from "./storage-service"
 import axios from "axios"
 import { LoginURL, LogoutURL, SignupURL } from "./url-set"
 
@@ -15,7 +15,7 @@ class AuthService {
                 context.authenticated = true
                 context.user = response.data.user
                 context.token = response.data.token
-                AuthToStorage(context)
+                WriteStorage(context, 'auth')
                 res(context)
             }).catch((e)=>{
                 rej({ error: e })
@@ -31,7 +31,7 @@ class AuthService {
                     rej({ error: response.data.error })
                 }
 
-                AuthDestroy()
+                DestroyDestroy('auth')
                 const context = authContext()
                 res(context)
             }).catch((e)=>{
@@ -51,7 +51,7 @@ class AuthService {
                 context.authenticated = true
                 context.user = response.data.user
                 context.token = response.data.token
-                AuthToStorage(context)
+                WriteStorage(context, 'auth')
                 res(context)
             }).catch((e)=>{
                 rej({ error: e })

@@ -6,18 +6,14 @@ import {
     REGISTER_ALL_CHANNELS,
     SET_SERVER_MESSAGE,
 } from "../actions/action-types"
-import { channelContext, AuthOfStorage } from "../services/storage-service"
+import { channelContext, WriteStorage, DestroyDestroy } from "../services/storage-service"
 
-const initialState = () => {
-    //const auth = AuthOfStorage()
-    return channelContext() //auth ? auth : authContext()
-}
 
 const AllChannels = (oldchannels, newchannels) => {
     const extras = []
     for (let channel of newchannels) {
         const chFound = oldchannels.find((ch, i) => ch.uid === channel.uid)
-
+        
         if (!chFound) {
             extras.push(channel)
         }
@@ -25,7 +21,7 @@ const AllChannels = (oldchannels, newchannels) => {
     return [...oldchannels, ...extras]
 }
 
-export default (state = initialState(), action) => {
+export default (state = channelContext(), action) => {
     const { type, content } = action
 
     switch (type) {
@@ -40,9 +36,12 @@ export default (state = initialState(), action) => {
                 channels: AllChannels(state.channels, content),
             }
         case LOAD_CHANNEL:
+            const allloadedchannels = [...state.loadedChannels, content]
+            state.loadedChannels = allloadedchannels
+            WriteStorage(state, 'channel')
             return {
                 ...state,
-                loadedChannels: [...state.loadedChannels, content],
+                loadedChannels: allloadedchannels,
             }
         case FOCUS_CHANNEL:
             return {

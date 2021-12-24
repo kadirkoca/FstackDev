@@ -1,12 +1,7 @@
 import { STACKS } from "../actions/action-types"
-import { dataContext, DataOfStorage } from "../services/storage-service"
+import { dataContext } from "../services/storage-service"
 
-const initialState = () => {
-    const auth = DataOfStorage()
-    return auth ? auth : dataContext()
-}
-
-export default (state = initialState(), action) => {
+export default (state = dataContext(), action) => {
     const { type, content } = action
 
     switch (type) {

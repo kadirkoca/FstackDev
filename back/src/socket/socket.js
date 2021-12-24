@@ -87,19 +87,19 @@ class Socket extends SocketBase {
         }
     }
 
-    PushMessage(msg, cuid){
-        const channel = Channels.get(cuid)
+    PushMessage(msg, uid){
+        const channel = Channels.get(uid)
         for(let user of channel.participants){
             if(user.id !== msg.sender){                
                 msg.direction = 'left'
-                user.socket.send(JSON.stringify({meta: 'newmessage', cuid, message: msg}))
+                user.socket.send(JSON.stringify({meta: 'newmessage', uid, message: msg}))
             }
         }
         channel.messages.push(msg)
     }
 
-    JoinChannel(socket, channelUID, count, user) {
-        const channel = Channels.get(channelUID)
+    JoinChannel(socket, uid, count, user) {
+        const channel = Channels.get(uid)
         if(!channel)return
         const person = channel.participants.find((person) => person.id === user.id)
         if (!person) {
@@ -116,15 +116,14 @@ class Socket extends SocketBase {
         const msg = {
             messages: messageBatch,
             meta: "joinchannel",
-            uid:channelUID,
-            user
+            uid,
+            user:{id:user.id, name:user.name}
         }
         const data = JSON.stringify(msg)
         socket.send(data)
-        this.SendChannels(socket, channel, false, true)
-        const message = { text: `${user.name} has joint the channel`, sender: 'server', meta: 'join' ,sender_id: user.id }
-        const bcast = JSON.stringify({meta: 'newmessage', channelUID, message})
-        this.BroadcastMessage(socket, bcast, false, true)
+        const message = { text: `${user.name} has joint the channel`, sender: 'server', meta: 'join' , user:{id:user.id, name:user.name}}
+        const bcast = JSON.stringify({meta: 'newmessage', uid, message})
+        this.BroadcastMessage(socket, bcast, false, false)
     }
 
     SendChannels(socket, channel = null, sendtosocket = false, toAll = false) {

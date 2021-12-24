@@ -1,12 +1,7 @@
 import { LOGIN, LOGOUT, SIGNUP } from "../actions/action-types"
-import { authContext, AuthOfStorage } from "../services/storage-service"
+import { authContext } from "../services/storage-service"
 
-const initialState = () => {
-    const auth = AuthOfStorage()
-    return auth ? auth : authContext()
-}
-
-export default (state = initialState(), action) => {
+export default (state = authContext(), action) => {
     const { type, content } = action
 
     switch (type) {

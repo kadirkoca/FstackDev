@@ -12,13 +12,14 @@ import {
     RegisterChannelsAction,
     LoadChannelAction,
     RegisterAllChannelsAction,
-    SetServerMessageAction
+    SetServerMessageAction,
 } from "../actions/channel-actions"
 
 const Live = (props) => {
     const [isOpen, setOpen] = useState(true)
     const [currentChannel, setCurrentChannel] = useState(null)
     const [connection, setConnection] = useState(false)
+    const allchannels = props.channels
     let previousWidth = -1
 
     const updateWidth = () => {
@@ -72,38 +73,49 @@ const Live = (props) => {
                 }
                 if (data.meta === "joinchannel") {
                     const messages = data.messages
-                    const channel = props.channels.find((channel) => channel.uid === data.uid)
+                    const channel = allchannels.find((channel) => channel.uid === data.uid)
                     const person = channel.participants.find((person) => person.id === data.user.id)
-                    console.log(person)
+
                     if (!person) {
                         channel.participants.push(data.user)
                     }
                     if (messages.length > 0) {
                         channel.messages = [...channel.messages, ...messages]
                     }
+                    const isLoaded = props.loadedChannels.find((channel) => channel.uid === data.uid)
+                    props.EnterChannelAction(data.uid)
+                    if (!isLoaded) {
+                        props.LoadChannelAction(channel)
+                    }
                     setCurrentChannel(channel)
                 }
                 if (data.meta === "newmessage") {
-                    const { message, channelUID } = data
-                    const channel = props.loadedChannels.find((channel) => channel.uid === channelUID)
+                    const { message, uid } = data
+                    const channel = props.loadedChannels.find((channel) => channel.uid === uid)
 
-                    if(message.sender === "server"){
-                        if(message.meta === 'join'){
+                    if (message.sender === "server") {
+                        if (message.meta === "join") {
                             const alreadyIn = channel.participants.find((user) => user.id === message.sender_id)
 
-                            if(!alreadyIn){
+                            const person = channel.participants.find((person) => person.id === message.user.id)
+
+                            if (!person) {
+                                channel.participants.push(message.user)
+                            }
+
+                            if (!alreadyIn) {
                                 props.SetServerMessageAction(message.text)
 
-                                setTimeout(()=>{
-                                    props.SetServerMessageAction('')
+                                setTimeout(() => {
+                                    props.SetServerMessageAction("")
                                 }, 5000)
                             }
                         }
-                    }else {
+                    } else {
                         if (channel) {
                             channel.messages.push(message)
                         }
-                    } 
+                    }
                 }
             }
         })
@@ -113,19 +125,18 @@ const Live = (props) => {
         const messagecount = channel.messages.length
         const channeluid = channel.uid
         SocketCL.JoinChannel(channeluid, messagecount, props.user)
-        setCurrentChannel(channel)
     }
 
     const selectTab = (e) => {
         const currentchannelID = e.target.attributes.index.value
         props.EnterChannelAction(currentchannelID)
-        const channel = props.channels.find((channel) => channel.uid === currentchannelID)
+        const channel = allchannels.find((channel) => channel.uid === currentchannelID)
         setCurrentChannel(channel)
     }
 
     return (
         <div className="sidebar-wrapper">
-            <SideBar toggle={toggle} isOpen={isOpen} JoinChannel={JoinChannel} />
+            <SideBar toggle={toggle} isOpen={isOpen} JoinChannel={JoinChannel} channels={allchannels} />
             <SideBarContent toggle={toggle} isOpen={isOpen} currentChannel={currentChannel} selectTab={selectTab} />
         </div>
     )
