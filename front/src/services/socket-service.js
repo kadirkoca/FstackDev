@@ -16,11 +16,11 @@ class SocketCL {
         if (Socket) Socket.send(JSON.stringify(message))
     }
 
-    JoinChannel(channeluid, messagesCount, client) {        
+    JoinChannel(channeluid, messagesCount, client) {
         const message = {
             meta: "join",
-            message: {'uid':channeluid, 'count':messagesCount},
-            user: { id: client._id, name: client.name}
+            message: { uid: channeluid, count: messagesCount },
+            user: { id: client._id, name: client.name },
         }
         this.SendMessage(message)
     }
@@ -30,12 +30,12 @@ class SocketCL {
     }
 
     CreateChannel(subject, user) {
-        if(!user)return
+        if (!user) return
         const uid = uuidv4()
         const channel = {
             uid,
             subject,
-            creator: user.name,
+            creator: { id: user._id, name: user.name },
         }
 
         const message = {

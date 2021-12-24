@@ -12,10 +12,8 @@ const socketURL = process.env.WEB_SOCKET_URL
 
 const App = (
     <Provider store={ConfigureStore}>
-        <>
-            <AppRouter />
-            <ToastContainer />
-        </>
+        <AppRouter />
+        <ToastContainer />
     </Provider>
 )
 

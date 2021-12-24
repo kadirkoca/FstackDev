@@ -12,7 +12,7 @@ const MessagePanel = (props) => {
                 <div className="container-fluid message-panel-container">
                     <div className="message-panel-header">
                         <div className="avatar">
-                            <span>{channel.creator.substring(0, 2).toUpperCase()}</span>
+                            <span>{channel.creator.name.substring(0, 2).toUpperCase()}</span>
                         </div>
                         <div className="infobox">
                             <p>{channel.subject}</p>

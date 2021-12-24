@@ -9,18 +9,7 @@ import SocketCL from "../services/socket-service"
 import { EnterChannelAction } from "../actions/channel-actions"
 
 const SideBarContent = (props) => {
-    const [channel, setChannel] = useState(null)
-
-    if(props.currentChannel !== null && channel !== props.currentChannel){
-        setChannel(props.currentChannel)
-    }
-
-    const selectTab = (e) => {
-        const currentchannelID = e.target.attributes.index.value
-        props.EnterChannelAction(currentchannelID)
-        const channel = props.channels.find((channel) => channel.uid === currentchannelID)
-        setChannel(channel)
-    }
+    const channel = props.currentChannel
 
     const SendMessage = (e) => {
         e.preventDefault()
@@ -45,7 +34,7 @@ const SideBarContent = (props) => {
                 <Navbar.Collapse>
                     {props.loadedChannels &&
                         props.loadedChannels.map((channel, i) => {
-                            return <ChannelTab channel={channel} selectTab={selectTab} key={i} />
+                            return <ChannelTab channel={channel} selectTab={props.selectTab} key={i} />
                         })}
                 </Navbar.Collapse>
             </Navbar>

@@ -7,13 +7,13 @@ const ChannelBox = (props) => {
     return (
         <div className="channel-box" onClick={props.ChannelSelected} channelid={props.channelbox.uid}>
             <div className="avatar">
-                <span>KA</span>
+                <span>{props.channelbox.creator.name.substring(0, 2).toUpperCase()}</span>
             </div>
             <div className="infobox">
                 <p>{props.channelbox.subject}</p>
                 <label className="muted small">{participants} participant</label>
                 <div className="infoline">
-                    <span>{props.channelbox.creator}</span>
+                    <span>{props.channelbox.creator.name}</span>
                     <label className="muted small">12 Dec, 14:02</label>
                 </div>
             </div>
