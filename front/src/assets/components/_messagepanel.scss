@@ -147,10 +147,10 @@ $message-panel: calc(100vh - 2rem - #{2 * $nav-height} - #{2 * $message-panel-he
 }
 .message-bubble.left{
     background: #e6eeee;
-    border-radius: 1rem 0 1rem 1rem;
+    border-radius: 1rem 1rem 1rem 0;
 }
 .message-bubble.right{
     background: #eee6e6;
-    border-radius: 0 1rem 1rem 1rem;
+    border-radius: 1rem 1rem 0 1rem;
     margin-left: auto;
 }

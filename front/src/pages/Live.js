@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Container, Row, Col, Navbar, Button, Nav } from "react-bootstrap"
-import { connect } from "react-redux"
-import dataService from "../services/data-service"
-import Toast from "../components/Toast"
-import Spinner from "../components/Spinner"
+import { connect, batch } from "react-redux"
 import SideBar from "../components/sidebar"
 import SideBarContent from "../components/SideBarContent"
 import SocketCL from "../services/socket-service"
@@ -13,13 +9,13 @@ import {
     LoadChannelAction,
     RegisterAllChannelsAction,
     SetServerMessageAction,
+    RegisterUserAction,
+    RegisterMessageAction,
 } from "../actions/channel-actions"
 
 const Live = (props) => {
     const [isOpen, setOpen] = useState(true)
-    const [currentChannel, setCurrentChannel] = useState(null)
     const [connection, setConnection] = useState(false)
-    const allchannels = props.channels
     let previousWidth = -1
 
     const updateWidth = () => {
@@ -29,7 +25,6 @@ const Live = (props) => {
         if (isMobile !== previousWidth <= widthLimit) {
             setOpen(!isMobile)
         }
-
         previousWidth = width
     }
 
@@ -56,65 +51,63 @@ const Live = (props) => {
         setOpen(!isOpen)
     }
 
+    // Socket Listen
     if (connection) {
         SocketCL.ListenMessage((data) => {
             if (data.meta !== undefined) {
                 if (data.meta === "channelcreated") {
-                    props.EnterChannelAction(data.channel.uid)
-                    props.LoadChannelAction(data.channel)
-                    props.RegisterChannelsAction(data.channel)
-                    setCurrentChannel(data.channel)
+                    batch(() => {
+                        props.RegisterChannelsAction(data.channel)
+                        props.LoadChannelAction(data.channel)
+                        props.EnterChannelAction(data.channel)
+                    })
+                }
+                if (data.meta === "newchannel") {
+                    const channelFromServer = data.message
+                    if (channelFromServer !== null) {
+                        props.RegisterChannelsAction(channelFromServer)
+                    }
                 }
                 if (data.meta === "channellist") {
                     const channelsFromServer = data.message
-                    if (channelsFromServer.length > 0) {
-                        props.RegisterAllChannelsAction(channelsFromServer)
+                    props.RegisterAllChannelsAction(channelsFromServer)
+                    if (channelsFromServer.length === 0 && props.loadedChannels.length > 0) {
+                        window.location.reload(false)
                     }
                 }
                 if (data.meta === "joinchannel") {
-                    const messages = data.messages
-                    const channel = allchannels.find((channel) => channel.uid === data.uid)
-                    const person = channel.participants.find((person) => person.id === data.user.id)
-
-                    if (!person) {
-                        channel.participants.push(data.user)
-                    }
-                    if (messages.length > 0) {
-                        channel.messages = [...channel.messages, ...messages]
-                    }
-                    const isLoaded = props.loadedChannels.find((channel) => channel.uid === data.uid)
-                    props.EnterChannelAction(data.uid)
-                    if (!isLoaded) {
-                        props.LoadChannelAction(channel)
-                    }
-                    setCurrentChannel(channel)
+                    const { joint_channel } = data
+                    batch(() => {
+                        props.RegisterChannelsAction(joint_channel)
+                        props.LoadChannelAction(joint_channel)
+                        props.EnterChannelAction(joint_channel)
+                    })
                 }
                 if (data.meta === "newmessage") {
                     const { message, uid } = data
                     const channel = props.loadedChannels.find((channel) => channel.uid === uid)
+                    if (uid === props.currentChannel.uid) {
+                        batch(() => {
+                            props.RegisterChannelsAction(channel)
+                            props.LoadChannelAction(channel)
+                            props.EnterChannelAction(channel)
+                        })
+                    } else {
+                        batch(() => {
+                            props.RegisterChannelsAction(channel)
+                            props.LoadChannelAction(channel)
+                        })
+                    }
 
                     if (message.sender === "server") {
                         if (message.meta === "join") {
-                            const alreadyIn = channel.participants.find((user) => user.id === message.sender_id)
+                            props.SetServerMessageAction(message.text)
 
-                            const person = channel.participants.find((person) => person.id === message.user.id)
-
-                            if (!person) {
-                                channel.participants.push(message.user)
-                            }
-
-                            if (!alreadyIn) {
-                                props.SetServerMessageAction(message.text)
-
-                                setTimeout(() => {
-                                    props.SetServerMessageAction("")
-                                }, 5000)
-                            }
+                            setTimeout(() => {
+                                props.SetServerMessageAction("")
+                            }, 5000)
                         }
                     } else {
-                        if (channel) {
-                            channel.messages.push(message)
-                        }
                     }
                 }
             }
@@ -122,34 +115,25 @@ const Live = (props) => {
     }
 
     const JoinChannel = (channel) => {
-        const messagecount = channel.messages.length
-        const channeluid = channel.uid
-        SocketCL.JoinChannel(channeluid, messagecount, props.user)
-    }
-
-    const selectTab = (e) => {
-        const currentchannelID = e.target.attributes.index.value
-        props.EnterChannelAction(currentchannelID)
-        const channel = allchannels.find((channel) => channel.uid === currentchannelID)
-        setCurrentChannel(channel)
+        SocketCL.JoinChannel(channel.uid, props.user)
     }
 
     return (
         <div className="sidebar-wrapper">
-            <SideBar toggle={toggle} isOpen={isOpen} JoinChannel={JoinChannel} channels={allchannels} />
-            <SideBarContent toggle={toggle} isOpen={isOpen} currentChannel={currentChannel} selectTab={selectTab} />
+            <SideBar toggle={toggle} isOpen={isOpen} JoinChannel={JoinChannel} />
+            <SideBarContent toggle={toggle} isOpen={isOpen} />
         </div>
     )
 }
 
 const mapStateToProps = (state) => {
     const { authenticated, token, user } = state.auth || {}
-    const { currentchannelID, loadedChannels, channels } = state.channel || {}
+    const { currentChannel, loadedChannels, channels } = state.channel || {}
 
     return {
         channels,
         loadedChannels,
-        currentchannelID,
+        currentChannel,
         authenticated,
         token,
         user,
@@ -162,6 +146,8 @@ const mapDispatchToProps = (dispatch) => ({
     LoadChannelAction: (context) => dispatch(LoadChannelAction(context)),
     RegisterAllChannelsAction: (context) => dispatch(RegisterAllChannelsAction(context)),
     SetServerMessageAction: (context) => dispatch(SetServerMessageAction(context)),
+    RegisterUserAction: (context) => dispatch(RegisterUserAction(context)),
+    RegisterMessageAction: (context) => dispatch(RegisterMessageAction(context)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Live)

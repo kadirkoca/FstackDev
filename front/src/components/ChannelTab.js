@@ -1,14 +1,20 @@
 import React from "react"
-import { Button, Nav } from "react-bootstrap"
-import ChannelBox from "./ChannelBox"
-import { BsChevronBarExpand, BsStarHalf, BsStar } from "react-icons/Bs"
 import { connect } from "react-redux"
+import {
+    EnterChannelAction,
+} from "../actions/channel-actions"
 
 const ChannelTab = (props) => {
-    const classname = props.channel.uid === props.currentchannelID ? 'active channel-tab' : 'channel-tab'
+    const classname = props.channel.uid === props.currentChannel.uid ? 'active channel-tab' : 'channel-tab'
     
+    const selectTab = (e) => {
+        const currentchannelID = e.target.attributes.index.value
+        const channel = props.channels.find((channel) => channel.uid === currentchannelID)
+        props.dispatch(EnterChannelAction(channel))
+    }
+
     return (
-        <div className={classname} index={props.channel.uid} onClick={props.selectTab}>
+        <div className={classname} index={props.channel.uid} onClick={selectTab}>
             <button>{props.channel.subject}</button>
         </div>
     )
@@ -16,9 +22,10 @@ const ChannelTab = (props) => {
 
 
 const mapStateToProps = (state) => {
-    const { currentchannelID } = state.channel || {}
+    const { currentChannel, channels } = state.channel || {}
     return {
-        currentchannelID
+        currentChannel,
+        channels
     }
 }
 export default connect(mapStateToProps)(ChannelTab)

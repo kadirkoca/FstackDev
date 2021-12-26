@@ -6,8 +6,8 @@ let Socket = null
 //const {channel, meta, message, user}
 class SocketCL {
     Connect(cb, token) {
-        document.cookie = "X-Authorization=" + token + "; path=/"
-        Socket = new WebSocket(SocketURL)
+        const token1 = "/X-Authorization=" + token
+        Socket = new WebSocket(SocketURL + token1)
         Socket.onopen = () => cb({ status: true, message: "Connected" })
         Socket.onclose = () => cb({ status: false, message: "Disconnected" })
     }
@@ -16,17 +16,25 @@ class SocketCL {
         if (Socket) Socket.send(JSON.stringify(message))
     }
 
-    JoinChannel(channeluid, messagesCount, client) {
+    JoinChannel(uid, client) {
         const message = {
             meta: "join",
-            message: { uid: channeluid, count: messagesCount },
+            uid,
             user: { id: client._id, name: client.name },
         }
         this.SendMessage(message)
     }
 
-    LeaveChannel() {
-        if (Socket) Socket.close()
+    LeaveChannel(uid, userid) {
+        if (Socket) {
+            const message = {
+                uid,
+                meta: "leave",
+                userid
+            }
+
+            this.SendMessage(message)
+        }
     }
 
     CreateChannel(subject, user) {

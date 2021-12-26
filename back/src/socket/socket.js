@@ -12,26 +12,30 @@ class Socket extends SocketBase {
         if (!options.server) {
             throw new Error("Server is not defined")
         }
-        const wss = super.CreateServer(options.server, this.VerifyClient, (wsocket) => {
-            wsock = wsocket           
+        const wss = super.CreateServer(options.server, this.VerifyClient, (wsocket, request) => {
+            wsock = wsocket
             wserver = wss
             this.SendChannels(wsocket, null, true)
             wsocket.on("message", (data) => {
-                this.ProcessMessage(wsocket, data)
-            })
-
-            wsocket.on("disconnected", (data)=>{
-                console.log('disconnected')
-                for(let channel of Channels){
-                    channel.participants.map((user)=> user.socket !== wsocket)
+                try {
+                    this.ProcessMessage(wsocket, data)
+                } catch (error) {
+                    console.log(error)
                 }
             })
+
+            // wsocket.on("disconnected", (data)=>{
+            //     console.log('disconnected')
+            //     for(let channel of Channels){
+            //         channel.participants.map((user)=> user.socket !== wsocket)
+            //     }
+            // })
         })
     }
 
     // Handshake
-    VerifyClient(info, cb) {
-        const token = info.req.headers.cookie
+    VerifyClient({ origin, req, secure }, cb) {
+        const token = req.url.replace("/X-Authorization=", "")
         if (!token) {
             cb(false, 501, "Unauthorized")
             return
@@ -64,107 +68,108 @@ class Socket extends SocketBase {
             return "Message not ready"
         }
         const dataJSON = JSON.parse(data.toString())
-        const {meta} = dataJSON
+        const { meta } = dataJSON
 
         if (meta === "create") {
             const { channel, user } = dataJSON
             channel.participants = [user]
             channel.messages = []
             this.SendMessage(socket, { meta: "channelcreated", channel })
-            
-            user.socket = socket
             channel.socket = socket
-            Channels.set(channel.uid, channel)   
+            Channels.set(channel.uid, channel)
             this.SendChannels(socket, channel)
-        }else if(meta === 'join'){
-            const { message, user } = dataJSON
-            const {uid, count} = message
+        } else if (meta === "join") {
+            const { uid, user } = dataJSON
             user.socket = socket
-            this.JoinChannel(socket, uid, count, user)
-        }else if(meta === 'textmessage'){
-            const { message, cuid } = dataJSON
-            this.PushMessage(message, cuid)
-        }
-    }
-
-    PushMessage(msg, uid){
-        const channel = Channels.get(uid)
-        for(let user of channel.participants){
-            if(user.id !== msg.sender){                
-                msg.direction = 'left'
-                user.socket.send(JSON.stringify({meta: 'newmessage', uid, message: msg}))
+            this.JoinChannel(socket, uid, user)
+        } else if (meta === "textmessage") {
+            const { message, uid } = dataJSON
+            //{ text: e.target.message.value, sender: { id: props.user._id, name: props.user.name } }
+            this.PushMessage(message, uid)
+        } else if (meta === "leave") {
+            const { uid, userid } = dataJSON
+            const ch = Channels.get(uid)
+            if(!ch || !ch.participants || ch.participants.length < 2){
+                Channels.delete(uid)
+            }else{
+                ch.participants = ch.participants.filter((user) => user.id !== userid)
             }
         }
-        channel.messages.push(msg)
     }
 
-    JoinChannel(socket, uid, count, user) {
+    PushMessage(message, uid) {
         const channel = Channels.get(uid)
-        if(!channel)return
+        const data = JSON.stringify({ meta: "newmessage", uid, message })
+        this.BroadcastMessage(null, data, false, true)
+        channel.messages.push(message)
+    }
+
+    JoinChannel(socket, uid, user) {
+        const channel = Channels.get(uid)
+        if (!channel) return
         const person = channel.participants.find((person) => person.id === user.id)
         if (!person) {
             channel.participants.push(user)
         }
-        
-        let messageBatch = []
-        if(count !== channel.messages.length){
-            for(let i = count; i<channel.messages.length; i++){
-                messageBatch.push(channel.messages[i])
-            }
-        }
 
         const msg = {
-            messages: messageBatch,
             meta: "joinchannel",
-            uid,
-            user:{id:user.id, name:user.name}
+            joint_channel: channel,
+            user: { id: user.id, name: user.name },
         }
         const data = JSON.stringify(msg)
         socket.send(data)
-        const message = { text: `${user.name} has joint the channel`, sender: 'server', meta: 'join' , user:{id:user.id, name:user.name}}
-        const bcast = JSON.stringify({meta: 'newmessage', uid, message})
+        const message = {
+            text: `${user.name} has joint the channel`,
+            sender: "server",
+            meta: "join",
+            user: { id: user.id, name: user.name },
+        }
+        const bcast = JSON.stringify({ meta: "newmessage", uid, message })
         this.BroadcastMessage(socket, bcast, false, false)
     }
 
     SendChannels(socket, channel = null, sendtosocket = false, toAll = false) {
         if (!wserver) return
         let channels = null
+        const msg = {}
 
-        if(channel !== null){
+        if (channel !== null) {
             channels = this.GetChannels(channel)
-        }else{
+            if (channels === null) return
+            msg.meta = "newchannel"
+            msg.message = channels
+        } else {
             channels = this.GetChannels()
+            msg.meta = "channellist"
+            msg.message = channels
+            if (channels === null) msg.message = []
         }
-
-        if(channels === null) return
-        const msg = {
-            message: channels,
-            meta: "channellist",
-        }
+        console.log(msg)
         const data = JSON.stringify(msg)
         this.BroadcastMessage(socket, data, sendtosocket, toAll)
     }
 
-    GetChannels(specifiChannel = null){
-        if(specifiChannel !== null){
-            const {socket, ...channelNew} = specifiChannel
-            for(let user of channelNew.participants){
-                delete user['socket']
+    GetChannels(specifiChannel = null) {
+        if (specifiChannel !== null) {
+            const { socket, ...channelNew } = specifiChannel
+            for (let user of channelNew.participants) {
+                delete user["socket"]
             }
-            return [channelNew]
+            return channelNew
         }
-        if(Channels.size === 0)return null
+        if (Channels.size === 0) return null
 
         let dummyChannels = []
         for (let channel of Channels.values()) {
-            delete channel['socket']
+            delete channel["socket"]
             dummyChannels.push(channel)
         }
         return dummyChannels
     }
 
-    BroadcastMessage(socket, data, toOne = false, toAll = false){
-        if(toOne === true){
+    BroadcastMessage(socket, data, toOne = false, toAll = false) {
+        if (toOne === true) {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(data)
             }
@@ -173,7 +178,7 @@ class Socket extends SocketBase {
 
         wserver.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
-                if((toAll === false && client !== socket) || toAll === true){
+                if ((toAll === false && client !== socket) || toAll === true) {
                     client.send(data)
                 }
             }

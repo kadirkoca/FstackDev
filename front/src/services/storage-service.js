@@ -26,13 +26,13 @@ export const dataContext = () => {
     }
 }
 
-export const channelContext = () => {
+export const channelContext = (empty = false) => {
     const dataset = ReadStorage(null, 'channel')
-    if(dataset){
+    if(dataset && !empty){
         return dataset
     }
     return {
-        currentchannelID: null,
+        currentChannel: {},
         channels: [],
         loadedChannels: [],
     }
