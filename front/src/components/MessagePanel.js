@@ -4,15 +4,15 @@ import MessageBubble from "./MessageBubble"
 import { connect, batch } from "react-redux"
 import SocketCL from "../services/socket-service"
 import { EnterChannelAction, ExitChannelAction } from "../actions/channel-actions"
-import ColorGenerate from '../utils/word-to-color'
+import ColorGenerate from "../utils/word-to-color"
 
 const MessagePanel = (props) => {
-    const [stateChannel, setChannel] = useState(null)
+    const [stateChannel, setChannel] = useState({})
     const channel = props.currentChannel
-    console.log(channel)
-    if(!channel || typeof channel !== 'object' || Object.keys(channel).length === 0)return <></>
-    if(!stateChannel)setChannel(channel)
-    
+
+    if (!channel || typeof channel !== "object" || Object.keys(channel).length === 0) return <></>
+    if (!stateChannel) setChannel(channel)
+
     const smessages = channel.messages
     const creatorname = channel.creator.name
     const firstTwoLetters = creatorname.substring(0, 2).toUpperCase()
@@ -35,14 +35,14 @@ const MessagePanel = (props) => {
         const uid = channel.uid
         if (props.loadedChannels.length > 1) {
             channelWillEnter = props.loadedChannels.find((ch) => channel.uid !== ch.uid)
-        }else{
-            setChannel(null)
+        } else {
+            setChannel({})
         }
         batch(() => {
             props.ExitChannelAction(channel)
             props.EnterChannelAction(channelWillEnter)
         })
-        SocketCL.LeaveChannel(uid, props.user._id)
+        SocketCL.LeaveChannel(uid, props.user)
     }
 
     return (

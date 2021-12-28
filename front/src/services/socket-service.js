@@ -25,12 +25,12 @@ class SocketCL {
         this.SendMessage(message)
     }
 
-    LeaveChannel(uid, userid) {
+    LeaveChannel(uid, user) {
         if (Socket) {
             const message = {
                 uid,
                 meta: "leave",
-                userid
+                user:{ id: user._id, name: user.name}
             }
 
             this.SendMessage(message)

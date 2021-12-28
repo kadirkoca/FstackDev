@@ -85,7 +85,23 @@ const Live = (props) => {
                 }
                 if (data.meta === "newmessage") {
                     const { message, uid } = data
-                    const channel = props.loadedChannels.find((channel) => channel.uid === uid)
+                    const channel = props.channels.find((channel) => channel.uid === uid)
+
+                    if (message.sender === "server") {
+                        if (message.meta === "join") {
+                            channel.participants.push(message.user)
+                            ShowServerMessage(props, message.text, channel)
+                        }
+                        if(message.meta === "leave"){
+                            ShowServerMessage(props, message.text, channel)
+
+                            const client = message.user
+                            channel.participants = channel.participants.filter((cl) => cl.id !== client.id)
+                        }
+                    } else {
+                        channel.messages.push(message)
+                    }
+
                     if (uid === props.currentChannel.uid) {
                         batch(() => {
                             props.RegisterChannelsAction(channel)
@@ -97,17 +113,6 @@ const Live = (props) => {
                             props.RegisterChannelsAction(channel)
                             props.LoadChannelAction(channel)
                         })
-                    }
-
-                    if (message.sender === "server") {
-                        if (message.meta === "join") {
-                            props.SetServerMessageAction(message.text)
-
-                            setTimeout(() => {
-                                props.SetServerMessageAction("")
-                            }, 5000)
-                        }
-                    } else {
                     }
                 }
             }
@@ -124,6 +129,15 @@ const Live = (props) => {
             <SideBarContent toggle={toggle} isOpen={isOpen} />
         </div>
     )
+}
+
+const ShowServerMessage = (props, message, channel) => {
+    if(props.currentChannel.uid === channel.uid){
+        props.SetServerMessageAction(message)
+        setTimeout(() => {
+            props.SetServerMessageAction("")
+        }, 5000)
+    }
 }
 
 const mapStateToProps = (state) => {

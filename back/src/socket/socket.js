@@ -87,13 +87,21 @@ class Socket extends SocketBase {
             //{ text: e.target.message.value, sender: { id: props.user._id, name: props.user.name } }
             this.PushMessage(message, uid)
         } else if (meta === "leave") {
-            const { uid, userid } = dataJSON
+            const { uid, user } = dataJSON
             const ch = Channels.get(uid)
             if(!ch || !ch.participants || ch.participants.length < 2){
                 Channels.delete(uid)
             }else{
-                ch.participants = ch.participants.filter((user) => user.id !== userid)
+                ch.participants = ch.participants.filter((client) => user.id !== client.id)
             }
+            const message = {
+                text: `${user.name} has left the channel`,
+                sender: "server",
+                meta: "leave",
+                user,
+            }
+            const data = JSON.stringify({ meta: "newmessage", uid, message })
+            this.BroadcastMessage(null, data, false, true)
         }
     }
 

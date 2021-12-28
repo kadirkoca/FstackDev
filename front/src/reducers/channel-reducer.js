@@ -68,10 +68,13 @@ export default (state = channelContext(), action) => {
                 server_message: content,
             }
         case EXIT_CHANNEL:
-            const clippedLoadedChannels = clipLoadedChannel(content, fakestate.loadedChannels)
-            fakestate.loadedChannels = [...clippedLoadedChannels]
-            WriteStorage(fakestate, "channel")
-            return { ...state, ...fakestate }
+            const clippedLoadedChannels = state.loadedChannels.filter((ch) => ch.uid !== content.uid)
+            WriteStorage(Object.assign(fakestate, { loadedChannels: clippedLoadedChannels }), "channel")
+            console.log(clippedLoadedChannels)
+            return {
+                ...fakestate, 
+                loadedChannels: clippedLoadedChannels 
+            }
         case REGISTER_MESSAGE:
             let messageFound = fakestate.currentChannel.messages.find(
                 (msg) => msg.sender.id === content.sender.id && msg.text === content.text
@@ -103,10 +106,6 @@ export default (state = channelContext(), action) => {
         default:
             return state
     }
-}
-
-const clipLoadedChannel = (channel, loadedChannels) => {
-    return loadedChannels.filter((ch) => ch.uid !== channel.uid)
 }
 
 const addIfnotExist = (state, channel, cuser) => {

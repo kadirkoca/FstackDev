@@ -4,7 +4,7 @@ import ColorGenerate from '../utils/word-to-color'
 const ChannelBox = (props) => {
     if(props.channel === null || !props.channel.hasOwnProperty('uid')) return <></>
     const participants = props.channel.participants.length
-    console.log('part '+participants)
+    
     const firstTwoLetters = props.channel.creator.name.substring(0, 2).toUpperCase()
     const bgColor = ColorGenerate(props.channel.creator.name)
 
