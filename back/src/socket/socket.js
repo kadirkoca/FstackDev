@@ -101,7 +101,7 @@ class Socket extends SocketBase {
                 user,
             }
             const data = JSON.stringify({ meta: "newmessage", uid, message })
-            this.BroadcastMessage(null, data, false, true)
+            this.BroadcastMessage(socket, data, false, false)
         }
     }
 
@@ -153,7 +153,7 @@ class Socket extends SocketBase {
             msg.message = channels
             if (channels === null) msg.message = []
         }
-        console.log(msg)
+        
         const data = JSON.stringify(msg)
         this.BroadcastMessage(socket, data, sendtosocket, toAll)
     }

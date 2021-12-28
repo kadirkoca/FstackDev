@@ -5,8 +5,7 @@ import {
     LOAD_CHANNEL,
     REGISTER_ALL_CHANNELS,
     SET_SERVER_MESSAGE,
-    REGISTER_MESSAGE,
-    REGISTER_USER
+    REMOVE_SERVER_MESSAGE
 } from "./action-types"
 
 export const RegisterChannelsAction = (content) => ({
@@ -39,12 +38,7 @@ export const SetServerMessageAction = (content) => ({
     content,
 })
 
-export const RegisterUserAction = (content) => ({
-    type: REGISTER_USER,
-    content,
-})
-
-export const RegisterMessageAction = (content) => ({
-    type: REGISTER_MESSAGE,
+export const RemoveServerMessageAction = (content) => ({
+    type: REMOVE_SERVER_MESSAGE,
     content,
 })

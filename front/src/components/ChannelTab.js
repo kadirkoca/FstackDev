@@ -5,6 +5,7 @@ import {
 } from "../actions/channel-actions"
 
 const ChannelTab = (props) => {
+    if (!props.channel || typeof props.channel !== "object" || Object.keys(props.channel).length === 0) return <></>
     const classname = props.channel.uid === props.currentChannel.uid ? 'active channel-tab' : 'channel-tab'
     
     const selectTab = (e) => {

@@ -12,6 +12,7 @@ const MessagePanel = (props) => {
 
     if (!channel || typeof channel !== "object" || Object.keys(channel).length === 0) return <></>
     if (!stateChannel) setChannel(channel)
+    const serverMsg = props.server_messages ? props.server_messages.find((msg) => msg.uid === channel.uid) : undefined
 
     const smessages = channel.messages
     const creatorname = channel.creator.name
@@ -38,8 +39,12 @@ const MessagePanel = (props) => {
         } else {
             setChannel({})
         }
+        const data = {
+            user_id: props.user._id,
+            uid
+        }
         batch(() => {
-            props.ExitChannelAction(channel)
+            props.ExitChannelAction(data)
             props.EnterChannelAction(channelWillEnter)
         })
         SocketCL.LeaveChannel(uid, props.user)
@@ -63,7 +68,7 @@ const MessagePanel = (props) => {
                         </button>
                     </div>
                     <div className="message-panel">
-                        {props.server_message && <span className="server-message">{props.server_message}</span>}
+                        {serverMsg && <span className="server-message">{serverMsg.message}</span>}
                         {smessages &&
                             smessages.map((data, i) => {
                                 if (!data.text) return
@@ -92,10 +97,10 @@ const MessagePanel = (props) => {
 }
 
 const mapStateToProps = (state) => {
-    const { server_message, currentChannel, loadedChannels } = state.channel || {}
+    const { server_messages, currentChannel, loadedChannels } = state.channel || {}
     const { user } = state.auth || {}
     return {
-        server_message,
+        server_messages,
         currentChannel,
         loadedChannels,
         user,

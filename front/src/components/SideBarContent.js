@@ -9,7 +9,7 @@ import { connect } from "react-redux"
 const SideBarContent = (props) => {
     return (
         <Container fluid className={classNames("content", { "is-open": props.isOpen })}>
-            <Navbar className="navbar shadow-sm p-3 rounded" expand>
+            <Navbar className="navbar shadow-sm rounded" expand>
                 <button className="siderbar-toggle" onClick={props.toggle}>
                     <BsChatLeftText />
                 </button>

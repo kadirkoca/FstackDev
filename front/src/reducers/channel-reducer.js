@@ -5,8 +5,7 @@ import {
     LOAD_CHANNEL,
     REGISTER_ALL_CHANNELS,
     SET_SERVER_MESSAGE,
-    REGISTER_MESSAGE,
-    REGISTER_USER,
+    REMOVE_SERVER_MESSAGE
 } from "../actions/action-types"
 import { channelContext, WriteStorage, DestroyDestroy } from "../services/storage-service"
 
@@ -15,19 +14,6 @@ export default (state = channelContext(), action) => {
     const fakestate = state
 
     switch (type) {
-        case REGISTER_CHANNEL:
-            let channels = [content]
-            
-            if (fakestate.channels.length > 0) {
-                channels = fakestate.channels.filter((ch) => ch.uid !== content.uid)
-                channels.push(content)
-            }
-
-            WriteStorage(Object.assign(fakestate, { channels: channels }), "channel")
-            return {
-                ...state,
-                channels,
-            }
         case REGISTER_ALL_CHANNELS:
             if (content.length === 0) {
                 DestroyDestroy("channel")
@@ -44,17 +30,29 @@ export default (state = channelContext(), action) => {
                 ...state,
                 channels: allchannels,
             }
-        case LOAD_CHANNEL:
-            let loadedchannels = [content]
-            
-            if (fakestate.loadedChannels.length > 0) {
-                loadedchannels = fakestate.loadedChannels.filter((ch) => ch.uid !== content.uid)
-                loadedchannels.push(content)
+        case REGISTER_CHANNEL:
+            const channels = fakestate.channels.filter((ch) => ch.uid !== content.uid)
+
+            if (content.participants.length > 0) {
+                channels.push(content)
             }
-            WriteStorage(Object.assign(fakestate, { loadedChannels: loadedchannels }), "channel")
+
+            WriteStorage(Object.assign(fakestate, { channels: channels }), "channel")
             return {
-                ...state,
-                loadedChannels: loadedchannels,
+                ...fakestate,
+                channels: channels,
+            }
+        case LOAD_CHANNEL:
+            const loadedChannels = fakestate.loadedChannels.filter((ch) => ch.uid !== content.uid)
+
+            if (content.participants.length > 0) {
+                loadedChannels.push(content)
+            }
+
+            WriteStorage(Object.assign(fakestate, { loadedChannels: loadedChannels }), "channel")
+            return {
+                ...fakestate,
+                loadedChannels: loadedChannels,
             }
         case FOCUS_CHANNEL:
             WriteStorage(Object.assign(fakestate, { currentChannel: content }), "channel")
@@ -63,45 +61,38 @@ export default (state = channelContext(), action) => {
                 currentChannel: content,
             }
         case SET_SERVER_MESSAGE:
+            const servermessages = state.server_messages ? state.server_messages : []
             return {
                 ...state,
-                server_message: content,
+                server_messages: [...servermessages, content],
+            }
+        case REMOVE_SERVER_MESSAGE:
+            const servermessagesRemoved = state.server_messages.filter((msg) => msg.uid !== content)
+            return {
+                ...state,
+                server_messages: servermessagesRemoved,
             }
         case EXIT_CHANNEL:
-            const clippedLoadedChannels = state.loadedChannels.filter((ch) => ch.uid !== content.uid)
-            WriteStorage(Object.assign(fakestate, { loadedChannels: clippedLoadedChannels }), "channel")
-            console.log(clippedLoadedChannels)
-            return {
-                ...fakestate, 
-                loadedChannels: clippedLoadedChannels 
-            }
-        case REGISTER_MESSAGE:
-            let messageFound = fakestate.currentChannel.messages.find(
-                (msg) => msg.sender.id === content.sender.id && msg.text === content.text
+            const clippedLoadedChannels = fakestate.loadedChannels.filter((ch) => ch.uid !== content.uid)
+            const clippedChannels = []
+            fakestate.channels.forEach((ch) => {
+                if (ch.uid === content.uid) {
+                    ch.participants = ch.participants.filter((user) => user.id !== content.user_id)
+                    if (ch.participants.length > 0) {
+                        clippedChannels.push(ch)
+                    }
+                } else {
+                    clippedChannels.push(ch)
+                }
+            })
+            WriteStorage(
+                Object.assign(fakestate, { channels: clippedChannels, loadedChannels: clippedLoadedChannels }),
+                "channel"
             )
-            if (!messageFound) {
-                fakestate.currentChannel.messages.push(content)
-            }
-
-            WriteStorage(fakestate, "channel")
-            return {
-                ...state,
-                currentChannel: fakestate.currentChannel,
-            }
-        case REGISTER_USER: // expected {uid, user}
-            addIfnotExist(fakestate, fakestate.currentChannel, content.user)
-            let updchannel = fakestate.channels.forEach((ch) => ch.uid === content.uid)
-            if (updchannel) {
-                addIfnotExist(fakestate, updchannel, content.user)
-            }
-            let updloadchannel = fakestate.loadedChannels.forEach((ch) => ch.uid === content.uid)
-            if (updloadchannel) {
-                addIfnotExist(fakestate, updloadchannel, content.user)
-            }
-
-            WriteStorage(fakestate, "channel")
             return {
                 ...fakestate,
+                channels: clippedChannels,
+                loadedChannels: clippedLoadedChannels,
             }
         default:
             return state

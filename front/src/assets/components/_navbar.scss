@@ -48,3 +48,8 @@
 .navbar .nav-link:hover, .navbar .nav-link.active{
     border-bottom:2px gray solid;
 }
+
+.navbar-collapse {
+    overflow: auto;
+    margin-top:auto;
+}

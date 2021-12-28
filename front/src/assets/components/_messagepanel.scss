@@ -64,7 +64,7 @@ $message-panel: calc(100vh - 2rem - #{2 * $nav-height} - #{2 * $message-panel-he
 
 
 .message-panel-footer input{
-    width: 90%;
+    width: calc(100% - 70px);
     background: none;
     outline: none;
     border: none;

@@ -9,8 +9,7 @@ import {
     LoadChannelAction,
     RegisterAllChannelsAction,
     SetServerMessageAction,
-    RegisterUserAction,
-    RegisterMessageAction,
+    RemoveServerMessageAction
 } from "../actions/channel-actions"
 
 const Live = (props) => {
@@ -85,7 +84,7 @@ const Live = (props) => {
                 }
                 if (data.meta === "newmessage") {
                     const { message, uid } = data
-                    const channel = props.channels.find((channel) => channel.uid === uid)
+                    let channel = props.channels.find((channel) => channel.uid === uid)
 
                     if (message.sender === "server") {
                         if (message.meta === "join") {
@@ -132,10 +131,11 @@ const Live = (props) => {
 }
 
 const ShowServerMessage = (props, message, channel) => {
+    if(!message)return
     if(props.currentChannel.uid === channel.uid){
-        props.SetServerMessageAction(message)
+        props.SetServerMessageAction({message, uid: channel.uid})
         setTimeout(() => {
-            props.SetServerMessageAction("")
+            props.RemoveServerMessageAction(channel.uid)
         }, 5000)
     }
 }
@@ -160,8 +160,7 @@ const mapDispatchToProps = (dispatch) => ({
     LoadChannelAction: (context) => dispatch(LoadChannelAction(context)),
     RegisterAllChannelsAction: (context) => dispatch(RegisterAllChannelsAction(context)),
     SetServerMessageAction: (context) => dispatch(SetServerMessageAction(context)),
-    RegisterUserAction: (context) => dispatch(RegisterUserAction(context)),
-    RegisterMessageAction: (context) => dispatch(RegisterMessageAction(context)),
+    RemoveServerMessageAction: (context) => dispatch(RemoveServerMessageAction(context)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Live)
