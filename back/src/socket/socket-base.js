@@ -2,7 +2,6 @@ const SocketAuth = require("../middleware/socket-auth")
 const WebSocket = require("ws")
 
 class SocketBase {
-    WebSocketServer = null
     constructor() {
         if (this.constructor === SocketBase) {
             throw new Error("Abstract classes can't be instantiated.")
