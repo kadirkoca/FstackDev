@@ -11,7 +11,7 @@ const genericroutes = require("./routes/generic-routes")
 require("./db/mongoose")
 
 
-const port = process.env.port
+const port = process.env.PORT
 
 const app = express()
 const server = http.createServer(app)
