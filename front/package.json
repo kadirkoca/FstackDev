@@ -4,8 +4,8 @@
   "description": "Example Node, Mern Crud",
   "main": "index.js",
   "scripts": {
-    "serve": "live-server public --port=9001",
-    "build": "webpack --watch",
+    "start": "webpack serve",
+    "build": "webpack",
     "dev": "webpack-dev-server"
   },
   "keywords": [

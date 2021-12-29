@@ -30,5 +30,8 @@ app.use("/api/auth", authroutes)
 app.use("/api/super", superroutes)
 app.use("/api/user", userroutes)
 app.use("/api", genericroutes)
+app.get("/test", (req, res)=>{
+    res.send('<h1>Server Running</h1>')
+})
 
 server.listen(port, "127.0.0.1", () => console.log(`Example app listening on port ${port}!`))
