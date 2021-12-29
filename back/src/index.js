@@ -12,7 +12,7 @@ require("./db/mongoose")
 
 
 const port = process.env.PORT
-
+console.log(process.env)
 const app = express()
 const server = http.createServer(app)
 const socket = new Socket({server, auth:false})
