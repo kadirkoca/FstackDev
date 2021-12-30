@@ -10,7 +10,6 @@ const userroutes = require("./routes/user-routes")
 const genericroutes = require("./routes/generic-routes")
 require("./db/mongoose")
 
-
 const port = process.env.PORT
 
 const app = express()

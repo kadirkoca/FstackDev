@@ -4,3 +4,4 @@ back/node_modules
 front/config
 back/config
 webpack.config.js
+.env

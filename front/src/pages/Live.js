@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { connect, batch } from "react-redux"
-import SideBar from "../components/sidebar"
+import SideBar from "../components/Sidebar"
 import SideBarContent from "../components/SideBarContent"
 import SocketCL from "../services/socket-service"
 import {
