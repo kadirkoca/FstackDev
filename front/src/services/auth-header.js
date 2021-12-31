@@ -1,4 +1,4 @@
-import { AuthOfStorage } from "./storage-service"
+import { ReadStorage } from "./storage-service"
 
 export default function authHeader() {
     const token = ReadStorage("token", "auth")
