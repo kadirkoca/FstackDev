@@ -58,7 +58,7 @@ const getTheItemKey = (itemkey) => {
 export const ReadStorage = (key = null, itemKey) => {
     try {
         const StorageItemKey = getTheItemKey(itemKey)
-        const serializedContext = sessionStorage.getItem(StorageItemKey)
+        const serializedContext = window.sessionStorage.getItem(StorageItemKey)
         if (serializedContext === null) {
             return undefined
         }
@@ -79,7 +79,7 @@ export const WriteStorage = (context, itemKey) => {
         const StorageItemKey = getTheItemKey(itemKey)
         const serializedContext = JSON.stringify(context)
         const data = itemKey === 'auth' ? CryptoJS.AES.encrypt(serializedContext, pass) : serializedContext
-        sessionStorage.setItem(StorageItemKey, data)
+        window.sessionStorage.setItem(StorageItemKey, data)
     } catch (e) {
         return e
     }
@@ -88,7 +88,7 @@ export const WriteStorage = (context, itemKey) => {
 export const DestroyDestroy = (itemKey) => {
     try {
         const StorageItemKey = getTheItemKey(itemKey)
-        const serializedContext = sessionStorage.removeItem(StorageItemKey)
+        const serializedContext = window.sessionStorage.removeItem(StorageItemKey)
     } catch (e) {
         return e
     }
