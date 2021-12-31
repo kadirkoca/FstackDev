@@ -1,7 +1,7 @@
 import React from "react"
 import { Container, Navbar, Nav } from "react-bootstrap"
 import classNames from "classnames"
-import { BsChatLeftText } from "react-icons/Bs"
+import { BsChatLeftText } from "react-icons/bs"
 import ChannelTab from "./ChannelTab"
 import MessagePanel from "./MessagePanel"
 import { connect } from "react-redux"

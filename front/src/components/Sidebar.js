@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Button } from "react-bootstrap"
 import classNames from "classnames"
 import ChannelBox from "./ChannelBox"
-import { BsChevronBarExpand } from "react-icons/Bs"
+import { BsChevronBarExpand } from "react-icons/bs"
 import NewChannelModal from "./NewChannelModal"
 import { connect } from "react-redux"
 import {

@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { BiExit, BiSend } from "react-icons/Bi"
+import { BiExit, BiSend } from "react-icons/bi"
 import MessageBubble from "./MessageBubble"
 import { connect, batch } from "react-redux"
 import SocketCL from "../services/socket-service"

@@ -5,8 +5,8 @@ import {
     ListGroup,
     ListGroupItem,
 } from "react-bootstrap"
-import { FiExternalLink, FiGithub } from 'react-icons/Fi'
-import { BsStarFill, BsStarHalf, BsStar } from 'react-icons/Bs'
+import { FiExternalLink, FiGithub } from 'react-icons/fi'
+import { BsStarFill, BsStarHalf, BsStar } from 'react-icons/bs'
 
 
 //BsStarFill, BsStarHalf, BsStar
