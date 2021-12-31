@@ -25,7 +25,7 @@ const Home = (props) => {
                     setStacks(rawdata)
                 })
                 .catch((e) => {
-                    Toast("error", e.error.message)
+                    Toast("error", e.toString())
                 })
         }
     }, [])
