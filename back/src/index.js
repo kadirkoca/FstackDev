@@ -29,7 +29,7 @@ app.use("/api/auth", authroutes)
 app.use("/api/super", superroutes)
 app.use("/api/user", userroutes)
 app.use("/api", genericroutes)
-app.get("/test", (req, res)=>{
+app.get("/api/test", (req, res)=>{
     res.send('<h1>Server Running</h1>')
 })
 
