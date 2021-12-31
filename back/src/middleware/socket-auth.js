@@ -3,7 +3,8 @@ const User = require('../models/user-model')
 
 const SocketAuth = async (cookie) =>{
     try {
-        const token = cookie.replace('X-Authorization=','')
+        const replaceQuery = process.env.MODE === 'development' ? 'X-Authorization=' : '/ws'
+        const token = cookie.replace(replaceQuery,'')
         const decode = jwt.verify(token, process.env.APP_SECRET)
         const user = await User.findOne({_id:decode._id, 'tokens.token':token})
 

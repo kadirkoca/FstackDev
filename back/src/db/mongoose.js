@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
 
-const env = process.env
-const dbURL = `mongodb://${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`
+const dbURL = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
 mongoose.connect(dbURL,{})

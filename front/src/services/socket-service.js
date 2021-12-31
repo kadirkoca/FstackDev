@@ -63,7 +63,7 @@ class SocketCL {
                     const message = JSON.parse(evt.data)
                     cb(message)
                 } catch (error) {
-                    console.log(error)
+                    //console.log(error)
                 }
             }
         }
