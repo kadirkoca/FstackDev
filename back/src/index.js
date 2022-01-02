@@ -1,20 +1,21 @@
+const path = require("path")
+require("dotenv").config({ path: path.resolve(__dirname, '../config/.env') })
+require("./db/mongoose")
 const express = require("express")
 const http = require("http")
 const helmet = require("helmet")
-const Socket = require('./socket/socket') 
+const Socket = require("./socket/socket")
 const cors = require("cors")
 const bodyParser = require("body-parser")
+//ROUTES
 const authroutes = require("./routes/auth-routes")
 const superroutes = require("./routes/super-routes")
 const userroutes = require("./routes/user-routes")
 const genericroutes = require("./routes/generic-routes")
-require("./db/mongoose")
-
-const port = process.env.PORT
 
 const app = express()
 const server = http.createServer(app)
-const socket = new Socket({server, auth:false})
+new Socket({server, auth:true})
 
 app.use(helmet())
 app.use(bodyParser.json())
@@ -29,8 +30,10 @@ app.use("/api/auth", authroutes)
 app.use("/api/super", superroutes)
 app.use("/api/user", userroutes)
 app.use("/api", genericroutes)
-app.get("/api/test", (req, res)=>{
-    res.send('<h1>Server Running</h1>')
+app.get("/", (req, res) => {
+    res.send("<h1>Server Running</h1>")
 })
 
-server.listen(port, "127.0.0.1", () => console.log(`Example app listening on port ${port}!`))
+
+const port = process.env.PORT
+app.listen(port, () => console.log(`Example app listening on port >> ${port}!`))

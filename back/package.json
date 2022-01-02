@@ -4,7 +4,7 @@
   "description": "Full stack development backend",
   "main": "index.js",
   "scripts": {
-    "start": "node -r dotenv/config src/index.js dotenv_config_path=./config/.env",
+    "start": "node src/index.js",
     "dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=./config/dev.env"
   },
   "author": "Kadir KOCA",

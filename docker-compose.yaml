@@ -4,13 +4,8 @@ services:
     mongodb:
         image: mongo:3.6.8
         restart: unless-stopped
-        env_file: ./.env
-        environment:
-            - DB_HOST=$DB_HOST
-            - DB_NAME=$DB_NAME
-            - DB_PORT=$DB_PORT
         ports:
-            - $DB_PORT:$DB_PORT
+            - "27017:27017"
         volumes:
             - db:/data/db
         networks:
@@ -18,45 +13,22 @@ services:
     back:
         depends_on:
             - mongodb
-        build:
-            context: ./back
-            dockerfile: Dockerfile
-        restart: unless-stopped
-        env_file: ./.env
+        build: ./back
         ports:
-            - $API_PORT:$API_PORT
-        environment:
-            - API_PORT=$API_PORT
-            - APP_SECRET=$APP_SECRET
-            - FRONT_ORIGIN=$FRONT_ORIGIN
-        volumes:
-            - ./back:/usr/src/back
-            - /usr/src/back/node_modules
+            - "9000:9000"
         networks:
             - backend
             - frontend
-
+        restart: on-failure
     front:
         depends_on:
             - back
-        env_file: ./.env
-        build:
-            context: ./front
-            dockerfile: Dockerfile
-            args:
-                - API_URL=$API_URL
+        build: ./front
         ports:
-            - $FRONT_PORT:$FRONT_PORT
-        environment:
-            - FRONT_PORT=$FRONT_PORT
-            - API_URL=$API_URL
-            - CHOKIDAR_USEPOLLING=true
-        volumes:
-            - ./front:/usr/src/front
-            - /usr/src/front/node_modules
+            - "9001:9001"
         networks:
             - frontend
-
+        restart: unless-stopped
 volumes:
     db:
         driver: local
@@ -65,4 +37,3 @@ networks:
     backend:
         driver: bridge
     frontend:
-        driver: bridge
