@@ -1,13 +1,14 @@
-FROM node:16 as builder
-
-WORKDIR /front
+FROM node:16-alpine as client-build
+WORKDIR /usr/app/
 COPY package*.json ./
 RUN npm install
 COPY . .
-CMD npm run build
+RUN npm run build
 
+# Setup the server
 FROM nginx
-COPY --from=builder /front/dist /usr/share/nginx/html
-COPY --from=builder /front/dist /var/www/html
-CMD ["nginx", "-g", "daemon off;"]
+COPY ../nginx/nginx.conf /etc/nginx/nginx.conf
+WORKDIR /usr/app/
+COPY --from=client-build /usr/app/build/ .
 
+EXPOSE 80
