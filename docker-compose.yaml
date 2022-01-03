@@ -25,7 +25,7 @@ services:
             - back
         build: ./front
         ports:
-            - "80:80"
+            - "80:9001"
         networks:
             - frontend
         restart: unless-stopped
@@ -35,5 +35,4 @@ volumes:
 
 networks:
     backend:
-        driver: bridge
     frontend:

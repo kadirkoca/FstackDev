@@ -31,6 +31,8 @@ app.use("/api/super", superroutes)
 app.use("/api/user", userroutes)
 app.use("/api", genericroutes)
 app.get("/", (req, res) => {
+    const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
+    console.log("full url "+fullUrl)
     res.send("<h1>Server Running</h1>")
 })
 

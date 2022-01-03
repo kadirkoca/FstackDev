@@ -5,11 +5,12 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+EXPOSE 80
+
 # Setup the server
 FROM nginx
 WORKDIR /front
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=client-build /front/dist/ /usr/share/nginx/html
+COPY --from=client-build /front/dist /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
 
-EXPOSE 80
