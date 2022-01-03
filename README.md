@@ -21,7 +21,7 @@ Repository contains two main folder **back** and **front**. Back folder contains
  -- Broadcasting the channels to all clients
  - Board section is completely not ready
 
- **Link** to development server on Amazon AWS : *http://ec2-18-116-70-254.us-east-2.compute.amazonaws.com*
+ **Link** to development server on Amazon AWS : *http://ec2-3-141-97-75.us-east-2.compute.amazonaws.com*
 
 # Collaboration
 
