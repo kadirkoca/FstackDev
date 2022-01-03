@@ -1,11 +1,15 @@
 # Welcome to F{ull} stack development
 
 Full Stack Development is a hobby project that represents a MERN stack.
-
+ - Stack -
+ - AWS - EC2
+ - Docker
+ - Nginx
  - Node.js
  - Express.js
  - Ws (Websocket Library)
  - React.js
+ - Webpack
  - MongoDB
 
 # Files
