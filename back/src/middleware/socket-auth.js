@@ -24,7 +24,7 @@ const SocketAuth = async (cookie) =>{
         console.log(e)
         return {
             error : 'Something was wrong with cookie',
-            code:404
+            code:403
         }
     }
 }

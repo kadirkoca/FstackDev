@@ -7,11 +7,15 @@ let Socket = null
 class SocketCL {
     Connect(cb, token) {
         const token1 = "/X-Authorization=" + token
-        Socket = new WebSocket(SocketURL + token1)
-        Socket.onopen = () => cb({ status: true, message: "Connected" })
-        Socket.onclose = () => cb({ status: false, message: "Disconnected" })
+        try {
+            Socket = new WebSocket(SocketURL + token1)
+            Socket.onopen = () => cb({ status: true, message: "Connected" })
+            Socket.onclose = () => cb({ status: false, message: "Disconnected" })
+        } catch (error) {
+            console.log(">Err "+error)
+        }
     }
-
+    
     SendMessage(message) {
         if (Socket) Socket.send(JSON.stringify(message))
     }
@@ -30,7 +34,7 @@ class SocketCL {
             const message = {
                 uid,
                 meta: "leave",
-                user:{ id: user._id, name: user.name}
+                user: { id: user._id, name: user.name },
             }
 
             this.SendMessage(message)
